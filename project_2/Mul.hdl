@@ -1,0 +1,82 @@
+// The chip multiplies 2 numbers.
+// Handling overflows: any number larger than 16 bits can be truncated to include 
+// only the 16 least significant bits.
+CHIP Mul{
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+    Not16(in=b, out=notb);
+    Inc16(in=notb, out=bPlus1);
+    Mux16(a=b, b=bPlus1, sel=b[15], out[0]=r0, out[1]=r1, out[2]=r2,
+        out[3]=r3, out[4]=r4, out[5]=r5, out[6]=r6, out[7]=r7, out[8]=r8,
+        out[9]=r9, out[10]=r10, out[11]=r11, out[12]=r12, out[13]=r13, out[14]=r14, out[15]=r15);
+
+    Not16(in=a, out=nota);
+    Inc16(in=nota, out=aPlus1);
+    Mux16(a=a, b=aPlus1, sel=b[15], out=resulta);
+
+    Mux16(a[0..14]=false, b=resulta, sel=r0, out=temp0);
+    ShiftLeft(in=resulta, out=shift1);
+
+    Mux16(a[0..14]=false, b=shift1, sel=r1, out=temp1);
+    ShiftLeft(in=shift1, out=shift2);
+
+    Mux16(a[0..14]=false, b=shift2, sel=r2, out=temp2);
+    ShiftLeft(in=shift2, out=shift3);
+
+    Mux16(a[0..14]=false, b=shift3, sel=r3, out=temp3);
+    ShiftLeft(in=shift3, out=shift4);
+
+    Mux16(a[0..14]=false, b=shift4, sel=r4, out=temp4);
+    ShiftLeft(in=shift4, out=shift5);
+
+    Mux16(a[0..14]=false, b=shift5, sel=r5, out=temp5);
+    ShiftLeft(in=shift5, out=shift6);
+
+    Mux16(a[0..14]=false, b=shift6, sel=r6, out=temp6);
+    ShiftLeft(in=shift6, out=shift7);
+
+    Mux16(a[0..14]=false, b=shift7, sel=r7, out=temp7);
+    ShiftLeft(in=shift7, out=shift8);
+
+    Mux16(a[0..14]=false, b=shift8, sel=r8, out=temp8);
+    ShiftLeft(in=shift8, out=shift9);
+
+    Mux16(a[0..14]=false, b=shift9, sel=r9, out=temp9);
+    ShiftLeft(in=shift9, out=shift10);
+
+    Mux16(a[0..14]=false, b=shift10, sel=r10, out=temp10);
+    ShiftLeft(in=shift10, out=shift11);
+
+    Mux16(a[0..14]=false, b=shift11, sel=r11, out=temp11);
+    ShiftLeft(in=shift11, out=shift12);
+
+    Mux16(a[0..14]=false, b=shift12, sel=r12, out=temp12);
+    ShiftLeft(in=shift12, out=shift13);
+
+    Mux16(a[0..14]=false, b=shift13, sel=r13, out=temp13);
+    ShiftLeft(in=shift13, out=shift14);
+
+    Mux16(a[0..14]=false, b=shift14, sel=r14, out=temp14);
+    ShiftLeft(in=shift14, out=shift15);
+
+    Mux16(a[0..14]=false, b=shift15, sel=r15, out=temp15);
+
+    
+    Add16(a=temp0, b=temp1, out=res0);
+    Add16(a=res0, b=temp2, out=res1);
+    Add16(a=res1, b=temp3, out=res2);
+    Add16(a=res2, b=temp4, out=res3);
+    Add16(a=res3, b=temp5, out=res4);
+    Add16(a=res4, b=temp6, out=res5);
+    Add16(a=res5, b=temp7, out=res6);
+    Add16(a=res6, b=temp8, out=res7);
+    Add16(a=res7, b=temp9, out=res8);
+    Add16(a=res8, b=temp10, out=res9);
+    Add16(a=res9, b=temp11, out=res10);
+    Add16(a=res10, b=temp12, out=res11);
+    Add16(a=res11, b=temp13, out=res12);
+    Add16(a=res12, b=temp14, out=res13);
+    Add16(a=res13, b=false, out=out);
+}

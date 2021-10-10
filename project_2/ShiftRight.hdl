@@ -1,0 +1,17 @@
+// The chip should move every input bit one position to the right, except the sign bit.
+// The sign should not change (this is an arithmetic shift).
+// The "new" bit should be the same as the sign.
+// For example:
+// ShiftRight(0000000000000001)=0000000000000000
+// ShiftRight(0100000000000000)=0010000000000000
+// ShiftRight(1100000000000000)=1110000000000000
+// Odd number are handled as follows:
+// -5/2 -> -3, 5/2-> 2
+
+CHIP ShiftRight{
+     IN in[16];
+     OUT out[16];
+     
+     PARTS:
+     And16(a[15]=in[15], a[0..14]=true, b[15]=in[15], b[0..14]=in[1..15], out=out);
+}
