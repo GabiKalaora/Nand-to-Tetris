@@ -9,10 +9,13 @@ Project_1:
 Project_2:
   add more components to the computer we are building, mainly the ALU component needed for caculations in CPU, hence for the ALU we need adder etc.
 
-Projrct_3:
+Project_3:
   added memory components:
       a. basic components of memory such as bit, registers etc.
       b. larger memory components such as RAM16k, big enough to handle prpoper execution for the computer we are building
+
+Project_4: 
+  algorithms and implementation of the oparations: sort, devide, multiplay and fill
 
 
   
