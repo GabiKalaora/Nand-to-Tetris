@@ -1,0 +1,77 @@
+/**
+* This chip is an extension of the book CPU by using the extended ALU.
+* More specificly if instruction[15]==0 or (instruction[14] and instruction[13] equals 1)
+* the CpuMul behave exactly as the book CPU.
+* While if it is C instruction and instruction[13] == 0 the output will be D*A/M 
+* (according to instruction[12]).
+* Moreover, if it is c instruction and instruction[14] == 0 it will behave as follows:
+*
+* instruction:  | 12 | 11 | 10 |
+* _____________________________
+* shift left D  | 0  | 1  | 1  |
+* shift left A  | 0  | 1  | 0  |
+* shift left M  | 1  | 1  | 0  |
+* shift right D | 0  | 0  | 1  |
+* shift right A | 0  | 0  | 0  |
+* shift right M | 1  | 0  | 0  |
+**/
+
+CHIP CpuMul{
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset=1) or continue executing
+                         // the current program (reset=0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write into M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+     PARTS:
+     And(a=instruction[15], b=instruction[5], out=CtoA); 
+     Mux16(a=instruction, b=outA, sel=CtoA, out=regA); // check if it is A-instruction or C-instruction
+ 
+     Not(in=instruction[15], out=temp); 
+     Or(a=CtoA, b=temp, out=loadAreg); // check if not(instruction[15] == 1 and instruction[5] == 0) to load A register
+     ARegister(in=regA, load=loadAreg, out=A, out[0..14]=addressM);
+ 
+ 
+     // *** load A or M register *** //
+     Mux16(a=A, b=inM, sel=instruction[12], out=AorM); // check if choose A or M register
+ 
+ 
+     // *** load D register *** //
+     And(a=instruction[15], b=instruction[4], out=CtoD); // check if instruction[15] == 1 and instruction[4] == 1) to load D register
+     DRegister(in=outD, load=CtoD, out=D);
+ 
+ 
+     // *** load the ExtendAlu *** //
+     Mux(a=false, b=instruction[13], sel=instruction[15], out=instruction7);
+     Mux(a=false, b=instruction[14], sel=instruction[15], out=instruction8);
+     ExtendAlu(x=D, y=AorM, instruction[8]=instruction8, instruction[7]=instruction7,
+        instruction[6]=false, instruction[0..5]=instruction[6..11] ,out=outA, out=outD, out=outM, zr=zrOut, ng=ngOut);
+ 
+ 
+     // *** write M *** //
+     And(a=instruction[15], b=instruction[3], out=writeM);
+ 
+ 
+     // load PC //
+     Not(in=zrOut, out=notZero);
+     Not(in=ngOut, out=notNegative);
+     And(a=notZero, b=notNegative, out=pos);
+ 
+     // check if ALU output fit the conditional in the instruction //
+     And(a=zrOut, b=instruction[1], out=zero); // out == 0 ?
+     And(a=ngOut, b=instruction[2], out=negative); // out < 0 ?
+     Or(a=zero, b=negative, out=zeroOrNeg); // out == 0 || out < 0 ?
+ 
+     And(a=pos, b=instruction[0], out=positive); // out > 0 ?
+     Or(a=zeroOrNeg, b=positive, out=conditinal); // out == 0 || out < 0 || out > 0 ?
+ 
+     And(a=instruction[15], b=conditinal, out=load); // it is C-instruction ?
+ 
+     PC(in=A, load=load, inc=true, reset=reset, out[0..14]=pc);
+}
