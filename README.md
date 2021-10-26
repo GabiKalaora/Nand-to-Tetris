@@ -17,5 +17,11 @@ Project_3:
 Project_4: 
   algorithms and implementation of the oparations: sort, devide, multiplay and fill
 
+Project_5:
+
+
+Project_6:
+  build an assembler !!
+
 
   
