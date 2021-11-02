@@ -23,5 +23,9 @@ Project_5:
 Project_6:
   build an assembler !!
 
+Project 7,8:
+  full vm translator takes code writen in vm languege and translates
+  it to hack assembly languege. first part translates arithmetic and push 
+  and pop commands
 
   
