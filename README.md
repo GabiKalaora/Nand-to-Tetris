@@ -27,5 +27,9 @@ Project 7,8:
   full vm translator takes code writen in vm languege and translates
   it to hack assembly languege. first part translates arithmetic and push 
   and pop commands
+  
+ Ptoject_9_10:
+   first part of jack compiler, gets jack files and outputs xml files.
+   xml files are mid leval step of full compilation for machine language
 
   
