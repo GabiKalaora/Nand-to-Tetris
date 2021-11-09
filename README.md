@@ -31,5 +31,10 @@ Project 7,8:
  Ptoject_9_10:
    first part of jack compiler, gets jack files and outputs xml files.
    xml files are mid leval step of full compilation for machine language
+   
+project_11:
+  second part of jack compiling, handles back to back compiling meening prog
+  gets jack files and fully transaltes them into vm code and from vm
+  to machine languege we all ready handelsd in prev projects
 
   
