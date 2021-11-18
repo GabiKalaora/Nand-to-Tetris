@@ -1,0 +1,195 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 512 rows (indexed 0..511, top to bottom)
+ * of 256 pixels each (indexed 0..255, a to b). The top a pixel on 
+ * the screen is indexed (0,0).
+ */
+class Screen {
+    static Array screen;
+    static boolean color;
+
+
+    /** Initializes the Screen. */
+    function void init() {
+        let screen = 16384;
+        let color = true;
+        return;
+    }
+
+    /** Erases the whole screen. */
+    function void clearScreen() {
+        var int i;
+        let i = 0;
+        while (i < 8192) {
+            let screen[i] = 0;
+            let i = i + 1;
+        }
+        return;
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+        let color = b;
+        return;
+    }
+
+    /** Draws the (x,y) pixel, using the current color. */
+    function void drawPixel(int x, int y) {
+        var int address, bit;
+        let address = (32*y) + (x/16);
+        let bit = Math.towToThe(x & 15);
+        if (color) {
+            let screen[address] = screen[address] | bit;
+        }
+        else {
+            let screen[address] = screen[address] & ~bit;
+        }
+        return;
+    }
+
+    /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+        var int dx, dy, temp, min_y, max_y, min_x, max_x;
+        var int a, b, check, advance, valid;
+        let min_y = Math.min(y1, y2);
+		let max_y =  Math.max(y1, y2);
+		let min_x = Math.min(x1, x2);
+		let max_x =  Math.max(x1, x2);
+        if (x1 = x2) {
+            while (~(max_y < min_y)) {
+				do Screen.drawPixel(x1, min_y);
+				let min_y = min_y + 1;
+			}
+            return;
+        }
+        if (y1 = y2) {
+            do Screen.horizonal(y1, min_x, max_x);
+            return;
+        }
+
+        if (x1 > x2) {
+            let temp = x1;
+            let x1 = x2;
+            let x2 = temp;
+
+            let temp = y1;
+            let y1 = y2;
+            let y2 = temp;
+        }
+
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+
+        let a = 0;
+        let b = 0;
+        let check = 0;
+
+        if (dy > 0) {
+            let advance = 1;
+        }
+        else {
+            let advance = -1;
+        }
+
+        while ((a < dx) & (((advance > 0) & (b < dy)) | ((advance < 0) & (b > dy)))) {
+            do Screen.drawPixel(x1 + a, y1 + b);
+            if (check < 0) {
+                let a = a + 1;
+                let check = check + (dy*advance);
+            }
+            else{
+                let b = b + advance;
+                let check = check - dx;
+            }
+        }
+        return;
+    }
+
+    /** calculate all options of a horizonal line. */
+    function void horizonal(int y, int x1, int x2) {
+        var int a, b, modX1, modX2, x11, x22;
+        if (x2 - x1 < 15) {//check if line sort from a register length
+            while (~(x1 > x2)) {
+                do Screen.drawPixel(x1, y);
+                let x1 = x1 + 1;
+            }
+            return;
+        }
+        let modX1 = x1 & 15;
+        let modX2 = x2 & 15;
+        let a = (32*y) + (x1/16);
+        let b = (32*y) + (x2/16);
+        if (~(modX1 = 0)) {
+            let x11 = x1 + (16 - modX1);
+            while (~(x1 > x11)) {
+                do Screen.drawPixel(x1, y);
+                let x1 = x1 + 1;
+            }
+            let a = a + 1;
+        }
+        if (~(modX2 = 0)) {
+            let x22 = x2 - modX2;
+            while (~(x22 > x2)) {
+                do Screen.drawPixel(x22, y);
+                let x22 = x22 + 1;
+            }
+            let b = b - 1;
+        }
+        while (~(a > b)) {
+            let screen[a] = color;
+            let a = a + 1;
+        }
+        return;
+    }
+
+    /** Draws a filled rectangle whose top a corner is (x1, y1)
+     * and bottom b corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+        while (y1 < y2) {
+            do Screen.horizonal(y1, x1, x2);
+            let y1 = y1 + 1;
+        }
+        do Screen.horizonal(y1, x1, x2);
+        return;
+    }
+
+    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
+    function void drawCircle(int cx, int cy, int r) {
+        var int x, y, decisionOver2;
+        let x = r;
+        let y = 0;
+        let decisionOver2 = 1 - x;
+
+        while (~(y > x)) {
+            do Screen.circleHelper(x + cy, -y + cx , y + cx);
+            do Screen.circleHelper(-x + cy, -y + cx, y + cx);
+            do Screen.circleHelper(y + cy, -x + cx,  x + cx);
+            do Screen.circleHelper(-y + cy, -x + cx, x + cx);
+
+            let y = y + 1;
+
+            if (decisionOver2 > 0) {
+                let x = x - 1;
+                let decisionOver2 = decisionOver2 + y + y - x - x  + 1;
+            }
+            else {
+                let decisionOver2 = decisionOver2 + y + y + 1;
+            }
+        }
+        return;
+    }
+
+    function void circleHelper(int y, int x1, int x2) {
+            while (~(x1 > x2)) {
+                do Screen.drawPixel(x1, y);
+                let x1 = x1 + 1;
+            }
+            return;
+        }
+}

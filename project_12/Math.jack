@@ -1,0 +1,127 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Math.jack
+
+/**
+ * A library of commonly used mathematical functions.
+ * Note: Jack compilers implement multiplication and division using OS method calls.
+ */
+class Math {
+    static Array bit_array;
+    static int towQy;
+
+    /** Initializes the library. */
+    function void init() {
+        var int i;
+        let towQy = 0;
+        let bit_array = Array.new(16);
+        let bit_array[0]  = 1;
+        let i = 1;
+        
+        while(i < 16){
+            let bit_array[i] = bit_array[i-1] + bit_array[i-1];
+            let i = i + 1;
+        }
+        return;
+    }
+
+    /** Returns the absolute value of x. */
+    function int abs(int x) {
+        if(x < 0){
+            return -x;
+        }
+        return x;  
+    }
+
+    /** Returns the product of x and y. 
+     *  When a Jack compiler detects the multiplication operator '*' in the 
+     *  program's code, it handles it by invoking this method. In other words,
+     *  the Jack expressions x*y and multiply(x,y) return the same value.
+     */
+    function int multiply(int x, int y) {
+        var int sum, shiftedX, i;
+        let sum = 0;
+        let i = 0;
+        let shiftedX = x;
+        while(i < 16){
+            if (~((bit_array[i] & y) = 0)){
+                let sum = sum + shiftedX;
+            }
+            let shiftedX = shiftedX + shiftedX;
+            let i = i + 1;
+        }
+        return sum;
+    }
+
+    /** Returns the integer part of x/y.
+     *  When a Jack compiler detects the multiplication operator '/' in the 
+     *  program's code, it handles it by invoking this method. In other words,
+     *  the Jack expressions x/y and divide(x,y) return the same value.
+     */
+    function int divide(int x, int y) {
+        var boolean neg_y,neg_x;
+        var int res;
+        let neg_x = x < 0;
+        let neg_y = y < 0;
+        let towQy = 0;
+        if (neg_x | neg_y){
+            let x = Math.abs(x);
+            let y =  Math.abs(y);
+        }
+        let res = Math.recorsiveDivide(x, y);
+        if(neg_x = neg_y){
+            return res;
+        }
+        return -res;  
+    }
+    function int recorsiveDivide(int x, int y) {
+        var int q;
+        if((y > x) | (y < 0)){
+            return 0;
+        }
+        let q = Math.recorsiveDivide(x,y+y);
+        if((x-towQy) < y){
+            return q+q;
+        }
+        else{
+            let towQy = towQy + y;
+            return q+q+1;
+        }
+    }
+    /** Returns the integer part of the square root of x. */
+    function int sqrt(int x) {
+        var int y, i, po;
+        let y = 0;
+        let i = 7; // num_of_bits=16, (num_of_bits/2)-1 = 7
+        while((i > 0) | (i = 0)){
+            let po = (y + bit_array[i]) * (y + bit_array[i]);
+            if(~(po > x) & (po > 0)){
+                let y = y + bit_array[i];
+            }
+            let i = i - 1;
+        } 
+        return y;
+    }
+
+    /** Returns the greater number. */
+    function int max(int a, int b) {
+        if (a > b){
+            return a;
+        }
+        return b;
+    }
+
+    /** Returns the smaller number. */
+    function int min(int a, int b) {
+        if (a < b){
+            return a;
+        }
+        return b;
+    }
+
+    /** return the number of power of tow acoording the bit array. */ 
+    function int towToThe(int i) {
+        return bit_array[i];
+    }
+}
