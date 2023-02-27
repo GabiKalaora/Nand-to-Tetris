@@ -378,3 +378,8 @@ class CompilationEngine:
         """
         self.__num_indentation -= 1
         self.__write("</" + type_terminal + ">\n")
+
+
+func notPython(){
+    fmt.Println("Hi")
+}

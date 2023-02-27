@@ -41,4 +41,3 @@ Project_12:
   Full OS for the computer we built in the all projects. this OS can handle basic 
   computer components such as drowing and placing and editing text, basic math calculations.
   
-  
