@@ -65,5 +65,4 @@ class SymbolTable:
         if name in self.__symbol_subroutine:
             return self.__symbol_subroutine[name][2]
         elif name in self.__symbol_class:
-            return self.__symbol_class[name][2]
-
+            return self.__symbol_class[name][2]@#typo
