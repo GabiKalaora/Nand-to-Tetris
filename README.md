@@ -42,3 +42,4 @@ Project_12:
   computer components such as drowing and placing and editing text, basic math calculations.
   
   
+this is first commit: and yes it's a dummy
